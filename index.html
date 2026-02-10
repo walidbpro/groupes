@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ship — Gestion des groupes</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --border: #2a2a3a;
+    --text: #e8e8ed;
+    --text-soft: #9494a8;
+    --text-muted: #5e5e72;
+    --red: #f59e0b;
+    --red-dim: rgba(245,158,11,0.10);
+    --green: #00e68a;
+    --green-dim: rgba(0,230,138,0.12);
+    --blue: #5b7fff;
+    --glow-green: 0 0 40px rgba(0,230,138,0.15);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  .top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 56px; opacity: 0; animation: fade 0.5s ease forwards 0.1s;
+  }
+  .top-brand { font-size: 13px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.03em; }
+  .shipped {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; color: var(--green);
+    background: var(--green-dim); padding: 6px 14px; border-radius: 100px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .shipped::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); animation: pulse 2s ease infinite;
+  }
+
+  .hero { margin-bottom: 64px; opacity: 0; animation: up 0.6s ease forwards 0.2s; }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 56px); font-weight: 800;
+    line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 16px;
+  }
+  .hero h1 .accent { color: var(--green); }
+  .hero p { font-size: 18px; color: var(--text-soft); font-weight: 400; max-width: 520px; }
+
+  .pills {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 64px; opacity: 0; animation: up 0.6s ease forwards 0.3s;
+  }
+  .pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
+    color: var(--text-soft); background: var(--surface); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 100px;
+  }
+  .pill strong { color: var(--text); font-weight: 600; }
+
+  .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .label.red { color: var(--red); }
+  .label.green { color: var(--green); }
+  .label.blue { color: var(--blue); }
+  .label.dim { color: var(--text-muted); }
+
+  .problem {
+    margin-bottom: 56px; opacity: 0; animation: up 0.6s ease forwards 0.35s;
+  }
+  .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 540px) { .pain-grid { grid-template-columns: 1fr; } }
+  .pain-card {
+    background: var(--red-dim); border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 12px; padding: 20px 22px;
+  }
+  .pain-card .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px; font-weight: 700; color: var(--red); margin-bottom: 4px;
+  }
+  .pain-card .desc { font-size: 14px; color: rgba(245,158,11,0.75); font-weight: 500; line-height: 1.4; }
+
+  .divider {
+    text-align: center; padding: 32px 0; font-size: 28px; color: var(--text-muted);
+    opacity: 0; animation: fade 0.4s ease forwards 0.4s;
+  }
+
+  .solution { margin-bottom: 56px; opacity: 0; animation: up 0.6s ease forwards 0.45s; }
+  .solution-hero {
+    background: var(--green-dim); border: 1px solid rgba(0,230,138,0.2);
+    border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: var(--glow-green);
+  }
+  .solution-hero h3 { font-size: 22px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+  .solution-hero p { font-size: 15px; color: rgba(0,230,138,0.7); margin: 0; }
+
+  .features { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 540px) { .features { grid-template-columns: 1fr; } }
+  .feat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; text-align: center;
+  }
+  .feat-icon { font-size: 24px; margin-bottom: 8px; }
+  .feat-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+  .demo { margin-bottom: 56px; opacity: 0; animation: up 0.6s ease forwards 0.5s; }
+  .video-wrap {
+    border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
+    background: #000; box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+  }
+  .video-wrap video { display: block; width: 100%; height: auto; }
+
+  .ba { margin-bottom: 56px; opacity: 0; animation: up 0.6s ease forwards 0.55s; }
+  .ba-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: start; }
+  @media (max-width: 540px) {
+    .ba-grid { grid-template-columns: 1fr; }
+    .ba-arrow { transform: rotate(90deg); padding: 12px 0; }
+  }
+  .ba-col { display: flex; flex-direction: column; gap: 10px; }
+  .ba-arrow {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 20px; font-size: 24px; color: var(--text-muted); align-self: center;
+  }
+  .ba-item {
+    font-size: 14px; font-weight: 500; padding: 12px 16px;
+    border-radius: 8px; display: flex; align-items: center; gap: 10px;
+  }
+  .ba-item.old {
+    background: var(--red-dim); color: var(--red); border: 1px solid rgba(245,158,11,0.15);
+    text-decoration: line-through; text-decoration-color: rgba(245,158,11,0.4);
+  }
+  .ba-item.new {
+    background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,230,138,0.15);
+  }
+
+  .fixes { margin-bottom: 56px; opacity: 0; animation: up 0.6s ease forwards 0.6s; }
+  .fix-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+  }
+  .fix-row:last-child { border-bottom: none; }
+  .fix-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+    color: var(--green); background: var(--green-dim); padding: 3px 10px;
+    border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .fix-text { color: var(--text-soft); }
+
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top">
+    <span class="top-brand">freelance.com / plateforme</span>
+    <span class="shipped">Shipped</span>
+  </div>
+
+  <div class="hero">
+    <h1>Groupes de mailing :<br><span class="accent">gestion à la volée</span></h1>
+    <p>Switch ON/OFF multi-groupes depuis la fiche membre. Plus de parcours répétitif.</p>
+  </div>
+
+  <div class="pills">
+    <span class="pill">📅 <strong>10 fév. 2026</strong></span>
+    <span class="pill">✅ Validé par <strong>Florence</strong></span>
+    <span class="pill">📦 Module <strong>Entreprises</strong></span>
+  </div>
+
+  <div class="problem">
+    <div class="label red">Le problème</div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="num">5 étapes</div>
+        <div class="desc">pour retirer un membre d'un seul groupe</div>
+      </div>
+      <div class="pain-card">
+        <div class="num">× N groupes</div>
+        <div class="desc">à répéter intégralement à chaque fois</div>
+      </div>
+      <div class="pain-card">
+        <div class="num">Doublons</div>
+        <div class="desc">infos entreprise affichées deux fois</div>
+      </div>
+      <div class="pain-card">
+        <div class="num">10 max</div>
+        <div class="desc">pas de pagination au-delà</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">↓</div>
+
+  <div class="solution">
+    <div class="label green">La solution</div>
+    <div class="solution-hero">
+      <h3>1 vue. Tous les groupes. Switch ON/OFF.</h3>
+      <p>Ajout et retrait multi-groupes à la volée, directement depuis la fiche membre.</p>
+    </div>
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-name">Switch ON/OFF</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🔍</div>
+        <div class="feat-name">Recherche + filtres</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🧹</div>
+        <div class="feat-name">Fiche nettoyée</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="label dim">Démo</div>
+    <div class="video-wrap">
+      <video autoplay loop muted playsinline>
+        <source src="demo.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <div class="ba">
+    <div class="label blue">Avant → Après</div>
+    <div class="ba-grid">
+      <div class="ba-col">
+        <div class="ba-item old">5 étapes / 1 groupe</div>
+        <div class="ba-item old">Répéter × N groupes</div>
+        <div class="ba-item old">Infos en doublon</div>
+        <div class="ba-item old">Max 10 groupes affichés</div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-col">
+        <div class="ba-item new">Switch multi-groupes en 1 vue</div>
+        <div class="ba-item new">Tout gérer d'un coup</div>
+        <div class="ba-item new">Fiche épurée</div>
+        <div class="ba-item new">Pagination + recherche</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixes">
+    <div class="label dim">Bugfixes inclus</div>
+    <div class="fix-row">
+      <span class="fix-badge">Fixed</span>
+      <span class="fix-text">Pagination manquante au-delà de 10 groupes</span>
+    </div>
+    <div class="fix-row">
+      <span class="fix-badge">Fixed</span>
+      <span class="fix-text">Refresh obligatoire pour la vérification « lieu de mission »</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
